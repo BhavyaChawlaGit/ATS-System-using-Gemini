@@ -2,3 +2,9 @@ streamlit
 google-generativeai
 python-dotenv
 pdf2image
+fitzbrew install poppler
+#/Users/bhavyachawla/.bash_profile
+
+#/Users/bhavyachawla/Downloads
+
+#Credentials saved to file: [/Users/bhavyachawla/.config/gcloud/application_default_credentials.json]

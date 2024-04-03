@@ -1,4 +1,8 @@
 from dotenv import load_dotenv
+import os
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/Users/bhavyachawla/.config/gcloud/application_default_credentials.json"
+
+
 
 load_dotenv()
 import base64
@@ -9,7 +13,10 @@ from PIL import Image
 import pdf2image
 import google.generativeai as genai
 
-genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+
+#os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/Users/bhavyachawla/.config/gcloud/application_default_credentials.json"
+genai.configure(api_key="AIzaSyC4Hl0wju8F5GtkkvR9MZIuXQgoVSY5Ddw")
+#AIzaSyC4Hl0wju8F5GtkkvR9MZIuXQgoVSY5Ddw
 
 def get_gemini_response(input,pdf_cotent,prompt):
     model=genai.GenerativeModel('gemini-pro-vision')

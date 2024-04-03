@@ -1,84 +1,61 @@
-
 from dotenv import load_dotenv
-
-load_dotenv()
-import fitz  # PyMuPDF
+import os
 import base64
 import streamlit as st
-import os
 import io
-from PIL import Image
-import pdf2image
+import pdfplumber
 import openai
 
-# Configure the OpenAI API client
-openai.api_key = os.getenv("OPENAI_API_KEY")
+# Replace 'your-api-key' with your actual API key
+openai.api_key = 'your-api-key'
 
-def extract_text_from_first_page(uploaded_file):
-    """
-    Extracts text from the first page of the uploaded PDF file.
-    """
-    with fitz.open(stream=uploaded_file.read(), filetype="pdf") as doc:
-        first_page_text = doc[0].get_text()
-    return first_page_text
-
-
-def get_gpt_response(prompt, pdf_content):
-    response = openai.Completion.create(
-        engine="text-davinci-003",  # You can choose the engine you prefer
-        prompt=prompt,
-        temperature=0.5,
-        max_tokens=1000,
-        top_p=1,
-        frequency_penalty=0,
-        presence_penalty=0
+def get_gpt3_response(input, pdf_content, prompt):
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "user", "content": f"{input} {pdf_content} {prompt}"},
+        ],
     )
-    return response.choices[0].text
+    return response['choices'][0]['message']['content']
 
 def input_pdf_setup(uploaded_file):
     if uploaded_file is not None:
-        ## Convert the PDF to image
-        images = pdf2image.convert_from_bytes(uploaded_file.read())
+        # Convert the PDF to text
+        with pdfplumber.open(uploaded_file) as pdf:
+            first_page = pdf.pages[0]
+            text = first_page.extract_text()
+        return text
 
-        first_page = images[0]
-
-        # Convert to bytes
-        img_byte_arr = io.BytesIO()
-        first_page.save(img_byte_arr, format='JPEG')
-        img_byte_arr = img_byte_arr.getvalue()
-
-        # In this OpenAI version, we do not send the PDF content to the API.
-        # So, this function does not need to return pdf_parts anymore.
-        return base64.b64encode(img_byte_arr).decode()  # encode to base64
-    else:
-        raise FileNotFoundError("No file uploaded")
-
-## Streamlit App
-
-st.set_page_config(page_title="ATS Resume Expert")
+# Streamlit code
+st.set_page_config(page_title="ATS Resume EXpert")
 st.header("ATS Tracking System")
 input_text = st.text_area("Job Description: ", key="input")
 uploaded_file = st.file_uploader("Upload your resume(PDF)...", type=["pdf"])
 
 if uploaded_file is not None:
     st.write("PDF Uploaded Successfully")
+    pdf_content = input_pdf_setup(uploaded_file)
 
 submit1 = st.button("Tell Me About the Resume")
 submit3 = st.button("Percentage match")
 
-input_prompt1 = """Your task is to review the provided resume against the job description..."""
+input_prompt1 = """
+ You are an experienced Technical Human Resource Manager,your task is to review the provided resume against the job description. 
+  Please share your professional evaluation on whether the candidate's profile aligns with the role. 
+ Highlight the strengths and weaknesses of the applicant in relation to the specified job requirements.
+"""
 
-input_prompt3 = """Your task is to evaluate the resume against the provided job description..."""
+input_prompt3 = """
+You are an skilled ATS (Applicant Tracking System) scanner with a deep understanding of data science and ATS functionality, 
+your task is to evaluate the resume against the provided job description. give me the percentage of match if the resume matches
+the job description. First the output should come as percentage and then keywords missing and last final thoughts.
+"""
 
 if submit1:
-    if uploaded_file is not None:
-        pdf_content = input_pdf_setup(uploaded_file)  # Note: The PDF content is not directly used in GPT prompt
-        response = get_gpt_response(input_prompt1, pdf_content)
-        st.subheader("The Response is")
-        st.write(response)
-    else:
-        st.write("Please upload the resume")
+    response = get_gpt3_response(input_text, pdf_content, input_prompt1)
+    st.text_area('Response:', response, height=400)
 
-elif submit3:
-    if uploaded_file is not None:
-        pdf_content = input_pdf_setup(uploaded_file)  # Note: The PDF content is not directly used
+if submit3:
+    response = get_gpt3_response(input_text, pdf_content, input_prompt3)
+    st.text_area('Response:', response, height=400)

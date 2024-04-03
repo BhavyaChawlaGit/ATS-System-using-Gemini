@@ -1,5 +1,7 @@
 from dotenv import load_dotenv
 import os
+
+# Replace the path below with the path to your ADC file
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/Users/bhavyachawla/.config/gcloud/application_default_credentials.json"
 
 
@@ -13,10 +15,12 @@ from PIL import Image
 import pdf2image
 import google.generativeai as genai
 
+# Replace 'your-api-key' with your actual API key
+api_key = os.getenv("your-api-key")
+if api_key is None:
+    raise Exception("Please set the 'your-api-key' environment variable to your API key.")
+genai.configure(api_key=api_key)
 
-#os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/Users/bhavyachawla/.config/gcloud/application_default_credentials.json"
-genai.configure(api_key="AIzaSyC4Hl0wju8F5GtkkvR9MZIuXQgoVSY5Ddw")
-#AIzaSyC4Hl0wju8F5GtkkvR9MZIuXQgoVSY5Ddw
 
 def get_gemini_response(input,pdf_cotent,prompt):
     model=genai.GenerativeModel('gemini-pro-vision')

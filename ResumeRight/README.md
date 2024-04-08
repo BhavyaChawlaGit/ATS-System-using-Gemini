@@ -18,5 +18,5 @@ pip install -r requirements.txt
 3. Run the Streamlit app with the command:
 
 ```
-streamlit run app.py
+streamlit run appgpt.py
 ```

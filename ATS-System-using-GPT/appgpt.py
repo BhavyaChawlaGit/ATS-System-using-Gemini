@@ -7,9 +7,8 @@ import pdfplumber
 import openai
 
 # Replace 'your-api-key' with your actual API key
-#openai.api_key = 'your-api-key'
 #openai.api_key = os.getenv("OPENAI_API_KEY")
-openai.api_key ="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"
+openai.api_key = st.secrets["OPENAI_API_KEY"]
 
 def get_gpt3_response(input, pdf_content, prompt):
     response = openai.ChatCompletion.create(

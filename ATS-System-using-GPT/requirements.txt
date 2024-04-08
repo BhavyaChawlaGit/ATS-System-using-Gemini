@@ -1,4 +1,4 @@
 #python-dotenv
 streamlit
 pdfplumber
-openai
+openai==0.28

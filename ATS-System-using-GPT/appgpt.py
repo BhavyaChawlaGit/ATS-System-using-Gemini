@@ -11,8 +11,8 @@ import psycopg2
 
 
 # Replace 'your-api-key' with your actual API key
-openai.api_key = "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"
-#openai.api_key = st.secrets["OPENAI_API_KEY"]
+#openai.api_key = "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"
+openai.api_key = st.secrets["OPENAI_API_KEY"]
 
 
 
@@ -64,34 +64,34 @@ if uploaded_file is not None:
     st.write("PDF Uploaded Successfully")
     #Postgre connection and execution 
     
-    file_data = uploaded_file.read()
+    # file_data = uploaded_file.read()
     
-    pdf_content = input_pdf_setup(io.BytesIO(file_data))
+    # pdf_content = input_pdf_setup(io.BytesIO(file_data))
+    
+    pdf_content=input_pdf_setup(uploaded_file)
     
     
     
-    
-    
 
-    conn = psycopg2.connect(dbname="Resume", user="postgres", password="bhavyachawla", host="localhost")
-    cur = conn.cursor()
+    # conn = psycopg2.connect(dbname="Resume", user="postgres", password="bhavyachawla", host="localhost")
+    # cur = conn.cursor()
 
-    cur.execute("""
-        CREATE TABLE IF NOT EXISTS resumes (
-            id SERIAL PRIMARY KEY,
-            pdf_data BYTEA
-        )
-    """)
+    # cur.execute("""
+    #     CREATE TABLE IF NOT EXISTS resumes (
+    #         id SERIAL PRIMARY KEY,
+    #         pdf_data BYTEA
+    #     )
+    # """)
 
 
 
 
-    cur.execute("INSERT INTO resumes (pdf_data) VALUES (%s)", (psycopg2.Binary(file_data),))
+    # cur.execute("INSERT INTO resumes (pdf_data) VALUES (%s)", (psycopg2.Binary(file_data),))
 
-    # Close communication with the database
-    conn.commit()
-    cur.close()
-    conn.close()
+    # # Close communication with the database
+    # conn.commit()
+    # cur.close()
+    # conn.close()
 
     # st.write(file_data)
 
